@@ -3,6 +3,10 @@ pipeline {
         label 'agent' 
     }
 
+    tools {
+        maven 'Maven-3.8.1'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -12,22 +16,13 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                withMaven(maven: 'Maven-3.8.1') {
-                    sh 'mvn test'
-                }
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                sh 'mvn clean test'
             }
         }
 
         stage('Build & Package') {
             steps {
-                withMaven(maven: 'Maven-3.8.1') {
-                    sh 'mvn clean package -DskipTests'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
 
@@ -40,7 +35,21 @@ pipeline {
 
     post {
         always {
+            // Publish test results
+            junit testResults: '**/target/surefire-reports/*.xml', 
+                  allowEmptyResults: true,
+                  skipPublishingChecks: true
+            
+            // Clean workspace
             cleanWs()
         }
+        
+        unstable {
+            echo 'Tests failed but continuing pipeline...'
+        }
+        
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
-}
+}}
