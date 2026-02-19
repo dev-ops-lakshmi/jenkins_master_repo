@@ -12,7 +12,9 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                sh 'mvn test'
+                withMaven(maven: 'Maven-3.8.1') {
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
@@ -23,7 +25,9 @@ pipeline {
 
         stage('Build & Package') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                withMaven(maven: 'Maven-3.8.1') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
