@@ -1,7 +1,6 @@
-
-peline {
-    agent {
-        label 'agent'
+pipeline {
+    agent { 
+        label 'agent' 
     }
 
     stages {
@@ -13,12 +12,10 @@ peline {
 
         stage('Unit Test') {
             steps {
-                // Ensure Maven is available in your agent image
                 sh 'mvn test'
             }
             post {
                 always {
-                    // JUnit plugin archives the results
                     junit '**/target/surefire-reports/*.xml'
                 }
             }
@@ -33,16 +30,14 @@ peline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // sh 'mvn deploy -DskipTests' // Uncomment when ready
             }
         }
     }
 
     post {
         always {
-            // Workspace Cleanup plugin wipes the agent
             cleanWs()
         }
     }
-}
+} // This is the last brace for 'pipeline'. Ensure there are no more after this.
 }
