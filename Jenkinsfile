@@ -39,5 +39,4 @@ pipeline {
             cleanWs()
         }
     }
-} // This is the last brace for 'pipeline'. Ensure there are no more after this.
-}
+}}
