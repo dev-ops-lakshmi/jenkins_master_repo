@@ -1,16 +1,29 @@
 pipeline {
-    agent {
-        // This label MUST match the 'Labels' field you set 
-        // in your Docker Template configuration earlier
-        label 'agent' 
-    }
+    agent { label 'agent' }
     stages {
-        stage('Dynamic Build') {
+        stage('Test') {
             steps {
-                sh 'echo "I am running inside a dynamic container!"'
-                sh 'cat /etc/os-release' // Shows the OS of the container
-             
+                // Runs Maven tests
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    // JUnit plugin: Archives XML results from target/surefire-reports/
+                    junit '**/target/surefire-reports/*.xml' 
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'mvn deploy -DskipTests'
             }
         }
     }
+    post {
+        always {
+            // Workspace Cleanup plugin: Wipes the entire agent directory
+            cleanWs() 
+        }
+    }
+}
 }
