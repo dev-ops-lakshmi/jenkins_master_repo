@@ -7,6 +7,10 @@ pipeline {
         maven 'Maven-3.8.1'
     }
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -35,12 +39,10 @@ pipeline {
 
     post {
         always {
-            // Publish test results
             junit testResults: '**/target/surefire-reports/*.xml', 
                   allowEmptyResults: true,
                   skipPublishingChecks: true
             
-            // Clean workspace
             cleanWs()
         }
         
@@ -52,4 +54,4 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
-}}
+}
