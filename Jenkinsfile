@@ -1,28 +1,47 @@
-pipeline {
-    agent { label 'agent' }
+
+peline {
+    agent {
+        label 'agent'
+    }
+
     stages {
-        stage('Test') {
+        stage('Checkout') {
             steps {
-                // Runs Maven tests
+                checkout scm
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                // Ensure Maven is available in your agent image
                 sh 'mvn test'
             }
             post {
                 always {
-                    // JUnit plugin: Archives XML results from target/surefire-reports/
-                    junit '**/target/surefire-reports/*.xml' 
+                    // JUnit plugin archives the results
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
+
+        stage('Build & Package') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
         stage('Deploy') {
             steps {
-                sh 'mvn deploy -DskipTests'
+                echo 'Deploying application...'
+                // sh 'mvn deploy -DskipTests' // Uncomment when ready
             }
         }
     }
+
     post {
         always {
-            // Workspace Cleanup plugin: Wipes the entire agent directory
-            cleanWs() 
+            // Workspace Cleanup plugin wipes the agent
+            cleanWs()
         }
     }
 }
