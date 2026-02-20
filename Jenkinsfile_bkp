@@ -26,14 +26,7 @@ pipeline {
 
         stage('Build & Package') {
             steps {
-                sh 'mvn package -DskipTests'
-            }
-        }
-
-        stage('Archive Artifacts') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', 
-                                 allowEmptyArchive: false
+                sh 'mvn clean package -DskipTests'
             }
         }
 
